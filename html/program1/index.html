@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لعبة الأسئلة - اليوم الوطني</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Cairo", sans-serif;
+      direction: rtl;
+      text-align: right;
+      background: linear-gradient(to bottom, #006c35aa, #004d24aa), url("pic1.png") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .corner-img {
+      position: absolute;
+      top: 10px;
+      width: 100px;
+      height: auto;
+      z-index: 10;
+    }
+    .top-left { left: 10px; }
+    .top-right { right: 10px; }
+
+    header {
+      background-color: #006c35dd;
+      padding: 25px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    h1 { margin: 0; font-size: 40px; color: #fff; font-weight: 700; flex:1; text-align:center; }
+    header img { height: 60px; margin-left: 125px; }
+    #quiz {
+      background: #ffffff11;
+      backdrop-filter: blur(6px);
+      padding: 25px;
+      margin-top: 30px;
+      border-radius: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      width: 85%;
+      max-width: 700px;
+    }
+    .question p { font-size: 26px; margin-bottom: 15px; font-weight: bold; }
+    label {
+      display: block;
+      background: #fff;
+      color: #006c35;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 22px;
+    }
+    input[type="radio"] { margin-left: 10px; transform: scale(1.3); }
+    .btns { margin-top: 20px; display:flex; gap:15px; }
+    button {
+      padding: 14px 30px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #fff;
+      color: #006c35;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover { background: #c8e6c9; transform: scale(1.07); }
+    #result { margin-top: 25px; font-size: 28px; font-weight: bold; text-align: center; white-space: pre-line; }
+    footer { margin-top: auto; padding: 15px; text-align: center; font-size: 16px; opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <img src="pic2.jpg" class="corner-img top-left">
+
+  <header>
+    <h1>🇸🇦 لعبة الأسئلة - اليوم الوطني السعودي</h1>
+    <h3 class="school-name">مدارس الموهوبين التقنية</h3>
+    <style>.school-name { text-align: left; margin-left: 125px; }</style>
+  </header>
+
+  <div id="quiz"></div>
+  <div class="btns">
+    <button onclick="prevQuestion()">السابق</button>
+    <button onclick="nextQuestion()">التالي</button>
+    <button onclick="finishQuiz()">إنهاء</button>
+  </div>
+  <p id="result"></p>
+
+  <footer>تصميم مستوحى من ألوان علم المملكة العربية السعودية 🇸🇦</footer>
+  <footer>عمل الطلاب: فارس و باسم</footer>
+
+  <script>
+    const allQuestions = [
+      { question: "متى يُحتفل باليوم الوطني السعودي؟", options: ["23 سبتمبر", "1 يناير", "3 مارس", "22 فبراير"], answer: 0 },
+      { question: "ما هو شعار اليوم الوطني السعودي لعام 2024؟", options: ["هي لنا دار", "نحلم ونحقق", "همة حتى القمة", "دارنا دار عز"], answer: 1 },
+      { question: "من هو مؤسس المملكة العربية السعودية؟", options: ["الملك سعود بن عبدالعزيز", "الملك عبدالعزيز آل سعود", "الملك فيصل بن عبدالعزيز", "الملك سلمان بن عبدالعزيز"], answer: 1 },
+      { question: "ما العام الذي تم فيه توحيد المملكة العربية السعودية؟", options: ["1351هـ / 1932م", "1349هـ / 1930م", "1400هـ / 1980م", "1373هـ / 1953م"], answer: 0 },
+      { question: "ما اللونان الرئيسيان في علم المملكة العربية السعودية؟", options: ["الأبيض والأحمر", "الأخضر والأبيض", "الأخضر والأسود", "الأبيض والأسود"], answer: 1 },
+      { question: "ما العبارة المكتوبة على علم المملكة العربية السعودية؟", options: ["لا إله إلا الله محمد رسول الله", "الله أكبر", "المملكة العربية السعودية", "التوحيد أساسنا"], answer: 0 },
+      { question: "أي مدينة تُعتبر أول عاصمة للدولة السعودية الثالثة؟", options: ["الرياض", "مكة المكرمة", "جدة", "الدرعية"], answer: 0 },
+      { question: "ما هو اليوم الذي يسبق اليوم الوطني السعودي عادة؟", options: ["22 سبتمبر", "24 سبتمبر", "30 أغسطس", "1 أكتوبر"], answer: 0 },
+      { question: "ما هو اليوم الوطني السعودي الذي يُحتفل به في عام 2025م؟", options: ["اليوم الوطني 95", "اليوم الوطني 94", "اليوم الوطني 93", "اليوم الوطني 92"], answer: 0 },
+      { question: "ما رمز السيف في علم المملكة العربية السعودية؟", options: ["القوة والعدل", "العلم والمعرفة", "السلام والوحدة", "الكرم والعطاء"], answer: 0 },
+      { question: "أي مدينة سعودية تضم الدرعية التاريخية التي ارتبطت ببداية تأسيس الدولة السعودية؟", options: ["الرياض", "الدرعية", "جدة", "مكة المكرمة"], answer: 1 },
+      { question: "من الملك الحالي للمملكة العربية السعودية؟", options: ["الملك عبدالله بن عبدالعزيز", "الملك فهد بن عبدالعزيز", "الملك سلمان بن عبدالعزيز", "ولي العهد محمد بن سلمان"], answer: 2 },
+      { question: "ما هو اليوم الذي تم فيه إعلان شعار (هي لنا دار) لأول مرة؟", options: ["اليوم الوطني 90", "اليوم الوطني 91", "اليوم الوطني 92", "اليوم الوطني 93"], answer: 1 }
+    ];
+
+    // اختيار 5 أسئلة عشوائية
+    function getRandomQuestions(arr, num) {
+      return arr.sort(() => Math.random() - 0.5).slice(0, num);
+    }
+
+    let selected = getRandomQuestions(allQuestions, 5);
+    let current = 0;
+    let answers = new Array(selected.length).fill(null);
+
+    function showQuestion() {
+      const q = selected[current];
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = `<div class="question"><p>السؤال ${current+1}/${selected.length}: ${q.question}</p>` +
+        q.options.map((opt, i) =>
+          `<label><input type="radio" name="q" value="${i}" ${answers[current]===i?"checked":""}> ${opt}</label>`
+        ).join("") + `</div>`;
+    }
+
+    function nextQuestion() {
+      const answer = document.querySelector('input[name="q"]:checked');
+      if(answer) answers[current] = parseInt(answer.value);
+      if(current < selected.length - 1) {
+        current++;
+        showQuestion();
+      }
+    }
+
+    function prevQuestion() {
+      const answer = document.querySelector('input[name="q"]:checked');
+      if(answer) answers[current] = parseInt(answer.value);
+      if(current > 0) {
+        current--;
+        showQuestion();
+      }
+    }
+
+    function finishQuiz() {
+      const answer = document.querySelector('input[name="q"]:checked');
+      if(answer) answers[current] = parseInt(answer.value);
+      let score = 0;
+      answers.forEach((a,i)=> { if(a === selected[i].answer) score++; });
+      document.getElementById("quiz").innerHTML = "";
+      document.getElementById("result").innerText = `انتهت اللعبة ✅\nدرجتك: ${score} من ${selected.length}`;
+      document.querySelector(".btns").style.display = "none";
+
+      // زر إعادة البدء
+      let restartBtn = document.createElement("button");
+      restartBtn.innerText = "إعادة البدء";
+      restartBtn.onclick = () => location.reload();
+      restartBtn.style.marginTop = "20px";
+      document.getElementById("result").appendChild(document.createElement("br"));
+      document.getElementById("result").appendChild(restartBtn);
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
